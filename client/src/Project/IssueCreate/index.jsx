@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import {
@@ -12,6 +12,7 @@ import toast from 'shared/utils/toast';
 import useApi from 'shared/hooks/api';
 import useCurrentUser from 'shared/hooks/currentUser';
 import { Form, IssueTypeIcon, Icon, Avatar, IssuePriorityIcon } from 'shared/components';
+import HelperImg from 'images/select_issue_type_in_Jira.png';
 
 import {
   FormHeading,
@@ -32,8 +33,29 @@ const propTypes = {
 
 const ProjectIssueCreate = ({ project, fetchProject, onCreate, modalClose }) => {
   const [{ isCreating }, createIssue] = useApi.post('/issues');
+  const [user, setUser] = useState(null)
+  const { currentUserId } = user
 
-  const { currentUserId } = useCurrentUser();
+  useEffect(() => {
+    const userObject = useCurrentUser();
+    setUser(userObject);
+  }, [user]);
+
+  const onSubmit = async (values, form) => {
+    try {
+      await createIssue({
+        ...values,
+        status: IssueStatus.BACKLOG,
+        projectId: project.id,
+        users: values.userIds.map(id => ({ id })),
+      });
+      await fetchProject();
+      toast.success('Issue has been successfully created.');
+      onCreate();
+    } catch (error) {
+      Form.handleAPIError(error, form);
+    }
+  }
 
   return (
     <Form
@@ -52,27 +74,12 @@ const ProjectIssueCreate = ({ project, fetchProject, onCreate, modalClose }) => 
         reporterId: Form.is.required(),
         priority: Form.is.required(),
       }}
-      onSubmit={async (values, form) => {
-        try {
-          await createIssue({
-            ...values,
-            status: IssueStatus.BACKLOG,
-            projectId: project.id,
-            users: values.userIds.map(id => ({ id })),
-          });
-          await fetchProject();
-          toast.success('Issue has been successfully created.');
-          onCreate();
-        } catch (error) {
-          Form.handleAPIError(error, form);
-        }
-      }}
     >
       <FormElement>
+        <img alt="Help Image" src={HelperImg} />
         <FormHeading>Create issue</FormHeading>
         <Form.Field.Select
           name="type"
-          label="Issue Type"
           tip="Start typing to get a list of possible matches."
           options={typeOptions}
           renderOption={renderType}
@@ -81,17 +88,14 @@ const ProjectIssueCreate = ({ project, fetchProject, onCreate, modalClose }) => 
         <Divider />
         <Form.Field.Input
           name="title"
-          label="Short Summary"
           tip="Concisely summarize the issue in one or two sentences."
         />
         <Form.Field.TextEditor
           name="description"
-          label="Description"
           tip="Describe the issue in as much detail as you'd like."
         />
         <Form.Field.Select
           name="reporterId"
-          label="Reporter"
           options={userOptions(project)}
           renderOption={renderUser(project)}
           renderValue={renderUser(project)}
@@ -99,7 +103,6 @@ const ProjectIssueCreate = ({ project, fetchProject, onCreate, modalClose }) => 
         <Form.Field.Select
           isMulti
           name="userIds"
-          label="Assignees"
           tio="People who are responsible for dealing with this issue."
           options={userOptions(project)}
           renderOption={renderUser(project)}
@@ -107,14 +110,13 @@ const ProjectIssueCreate = ({ project, fetchProject, onCreate, modalClose }) => 
         />
         <Form.Field.Select
           name="priority"
-          label="Priority"
           tip="Priority in relation to other issues."
           options={priorityOptions}
           renderOption={renderPriority}
           renderValue={renderPriority}
         />
         <Actions>
-          <ActionButton type="submit" variant="primary" isWorking={isCreating}>
+          <ActionButton variant="primary" onClick={onSubmit} isWorking={isCreating}>
             Create Issue
           </ActionButton>
           <ActionButton type="button" variant="empty" onClick={modalClose}>

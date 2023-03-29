@@ -36,7 +36,7 @@ const generateField = FormComponent => {
         hasLabel={!!label}
         data-testid={name ? `form-field:${name}` : 'form-field'}
       >
-        {label && <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>}
+        {label && <FieldLabel>{label}</FieldLabel>}
         <FormComponent id={fieldId} invalid={!!error} name={name} {...otherProps} />
         {tip && <FieldTip>{tip}</FieldTip>}
         {error && <FieldError>{error}</FieldError>}

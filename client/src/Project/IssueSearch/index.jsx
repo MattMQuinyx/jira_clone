@@ -47,6 +47,24 @@ const ProjectIssueSearch = ({ project }) => {
     }
   };
 
+  const IssueContainer = issue => {
+    const [isOpen, setIsOpen] = useState(false)
+
+    return (
+      <Issue key={issue.id}>
+        <IssueTypeIcon type={issue.type} size={25} />
+        <IssueTitle onClick={() => setIsOpen(!isOpen)}>{issue.title}</IssueTitle>
+        {isOpen && (
+          <React.Fragment>
+            <IssueTypeId>{`${issue.type}-${issue.id}`}</IssueTypeId>
+            <IssueData>{issue.shortDescription}</IssueData>
+          </React.Fragment>
+        )}
+        <Link to={`/project/board/issues/${issue.id}`}>View Issue</Link>
+      </Issue>
+    )
+  };
+
   return (
     <IssueSearch>
       <SearchInputCont>
@@ -62,14 +80,14 @@ const ProjectIssueSearch = ({ project }) => {
       {isSearchTermEmpty && recentIssues.length > 0 && (
         <Fragment>
           <SectionTitle>Recent Issues</SectionTitle>
-          {recentIssues.map(renderIssue)}
+          {recentIssues.map(IssueContainer)}
         </Fragment>
       )}
 
       {!isSearchTermEmpty && matchingIssues.length > 0 && (
         <Fragment>
           <SectionTitle>Matching Issues</SectionTitle>
-          {matchingIssues.map(renderIssue)}
+          {matchingIssues.map(IssueContainer)}
         </Fragment>
       )}
 
@@ -83,18 +101,6 @@ const ProjectIssueSearch = ({ project }) => {
     </IssueSearch>
   );
 };
-
-const renderIssue = issue => (
-  <Link key={issue.id} to={`/project/board/issues/${issue.id}`}>
-    <Issue>
-      <IssueTypeIcon type={issue.type} size={25} />
-      <IssueData>
-        <IssueTitle>{issue.title}</IssueTitle>
-        <IssueTypeId>{`${issue.type}-${issue.id}`}</IssueTypeId>
-      </IssueData>
-    </Issue>
-  </Link>
-);
 
 ProjectIssueSearch.propTypes = propTypes;
 
