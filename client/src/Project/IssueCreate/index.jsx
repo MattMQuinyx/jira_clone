@@ -117,7 +117,7 @@ const ProjectIssueCreate = ({ project, fetchProject, onCreate, modalClose }) => 
           renderValue={renderPriority}
         />
         <Actions>
-          <ActionButton variant="primary" onClick={onSubmit} isWorking={isCreating}>
+          <ActionButton type="button" variant="primary" onClick={onSubmit} isWorking={isCreating}>
             Create Issue
           </ActionButton>
           <ActionButton type="button" variant="empty" onClick={modalClose}>
