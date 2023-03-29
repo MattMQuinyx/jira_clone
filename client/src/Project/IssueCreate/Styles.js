@@ -10,7 +10,6 @@ export const FormElement = styled(Form.Element)`
 export const FormHeading = styled.div`
   padding-bottom: 15px;
   ${font.size(21)}
-  color: ${color.secondary};
 `;
 
 export const SelectItem = styled.div`

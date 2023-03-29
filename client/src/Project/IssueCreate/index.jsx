@@ -13,6 +13,7 @@ import useApi from 'shared/hooks/api';
 import useCurrentUser from 'shared/hooks/currentUser';
 import { Form, IssueTypeIcon, Icon, Avatar, IssuePriorityIcon } from 'shared/components';
 import HelperImg from 'images/select_issue_type_in_Jira.png';
+import { color } from 'shared/utils/styles';
 
 import {
   FormHeading,
@@ -77,7 +78,7 @@ const ProjectIssueCreate = ({ project, fetchProject, onCreate, modalClose }) => 
     >
       <FormElement>
         <img alt="Help Image" src={HelperImg} />
-        <FormHeading>Create issue</FormHeading>
+        <FormHeading style={{ color: color.secondary }}>Create issue</FormHeading>
         <Form.Field.Select
           name="type"
           tip="Start typing to get a list of possible matches."
